@@ -1,12 +1,12 @@
 package main
 
 import (
+	"controllers"
 	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"viewmodel"
 )
 
 //
@@ -21,24 +21,8 @@ import (
 func main() {
 	// Render all templates for one
 	templates := populateTemplates()
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// Store the required file
-		requiredFile := r.URL.Path[1:]
-		// Run a lookup for the required template
-		t := templates[requiredFile+".html"] // Lookup is not done since templates variable in now a map of templates
-		context := viewmodel.NewBase()
-		if t != nil {
-			t.Execute(w, context)
-		} else {
-			w.WriteHeader(http.StatusNotFound)
-		}
-	})
-	// fmt.Println(os.Getwd())
-	// Handle CSS and Image requirements for basic styling
-	http.Handle("/images/", http.FileServer(http.Dir("public")))
-	http.Handle("/css/", http.FileServer(http.Dir("public")))
-	http.Handle("/js/", http.FileServer(http.Dir("public")))
-	http.Handle("/fonts/", http.FileServer(http.Dir("public")))
+	// Controller loads all the templates
+	controllers.Startup(templates)
 	// Run the Server
 	http.ListenAndServe(":8000", nil)
 }

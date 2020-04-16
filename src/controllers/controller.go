@@ -14,6 +14,7 @@ func Startup(templates map[string]*template.Template) {
 	// Call the Home Controller and map the respective home template
 	homeController.homeTemplate = templates["index.html"]
 	menuController.menuTemplate = templates["menu.html"]
+	menuController.categoryTemplate = templates["menu.html"]
 	homeController.registerRoutes()
 	menuController.registerRoutes()
 	// Handle Static File Loading

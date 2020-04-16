@@ -1,110 +1,87 @@
 package viewmodel
 
+import (
+	"models"
+)
+
 type Menu struct {
 	Title       string
 	Description string
-	Active      string
-	Types       []Categories
+	Types       []Category
 }
 
-type Categories struct {
-	URL      string
-	Title    string
-	Contents []Items
+type Category struct {
+	ID    int
+	URL   string
+	Title string
+	items []Item
 }
 
-type Items struct {
-	ImageURL    string
+type Item struct {
+	ID          int
+	CategoryID  int
 	Title       string
 	Description string
+	ImageURL    string
 	Price       string
 }
 
-func CreateMenu() Menu {
-
-	result := Menu{Title: "Special Menu",
-		Description: "Our Delicacies from around the world",
-		Active:      "menu",
+func CreateMenu(categories []models.Category) Menu {
+	result := Menu{
+		Title:       "Our Special Menu",
+		Description: "A List of all our Special Dishes",
 	}
-
-	AllClass := Categories{URL: "",
-		Title: "All",
+	result.Types = make([]Category, len(categories))
+	for i := 1; i <= len(categories); i++ {
+		vm := categorytoVM(categories[i-1])
+		vm.items = AddItems(i)
+		result.Types[i-1] = vm
 	}
-
-	DrinksClass := Categories{
-		URL:   "",
-		Title: "Drinks",
-	}
-
-	LunchClass := Categories{
-		URL:   "",
-		Title: "Lunch",
-	}
-
-	DinnerClass := Categories{
-		URL:   "",
-		Title: "Dinner",
-	}
-
-	itemDrink1 := Items{
-		ImageURL:    "images/img-01.jpg",
-		Title:       "Special Drinks 1",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$7.79",
-	}
-	itemDrink2 := Items{
-		ImageURL:    "images/img-02.jpg",
-		Title:       "Special Drinks 2",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$9.79",
-	}
-	itemDrink3 := Items{
-		ImageURL:    "images/img-03.jpg",
-		Title:       "Special Drinks 3",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$10.79",
-	}
-	itemLunch1 := Items{
-		ImageURL:    "images/img-04.jpg",
-		Title:       "Special Lunch 1",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$15.79",
-	}
-	itemLunch2 := Items{
-		ImageURL:    "images/img-05.jpg",
-		Title:       "Special Lunch 2",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$18.79",
-	}
-	itemLunch3 := Items{
-		ImageURL:    "images/img-06.jpg",
-		Title:       "Special Lunch 3",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$20.79",
-	}
-	itemDinner1 := Items{
-		ImageURL:    "images/img-07.jpg",
-		Title:       "Special Dinner 1",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$25.79",
-	}
-	itemDinner2 := Items{
-		ImageURL:    "images/img-08.jpg",
-		Title:       "Special Dinner 2",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$22.79",
-	}
-	itemDinner3 := Items{
-		ImageURL:    "images/img-09.jpg",
-		Title:       "Special Dinner 3",
-		Description: "Sed id magna vitae eros sagittis euismod.",
-		Price:       "$24.79",
-	}
-	AllClass.Contents = []Items{itemDrink1, itemDrink2, itemDrink3, itemLunch1, itemLunch2, itemLunch3, itemDinner1, itemDinner2, itemDinner3}
-	DrinksClass.Contents = []Items{itemDrink1, itemDrink2, itemDrink3}
-	LunchClass.Contents = []Items{itemLunch1, itemLunch2, itemLunch3}
-	DinnerClass.Contents = []Items{itemDinner1, itemDinner2, itemDinner3}
-
-	result.Types = []Categories{AllClass, DrinksClass, LunchClass, DinnerClass}
 	return result
+}
+
+func categorytoVM(c models.Category) Category {
+	return Category{
+		URL:   c.URL,
+		Title: c.Title,
+		ID:    c.ID,
+	}
+}
+
+//
+// func AddtoAll(c Category) {
+// 	items := models.GetItemsforAll()
+// 	for _, i := range items {
+// 		c.items = append(c.items, ItemtoVM(i))
+// 	}
+// }
+//
+func AddItems(c int) []Item {
+	items := models.GetItemsforCategories(c)
+	var result []Item
+	for _, i := range items {
+		if i.CategoryID == c {
+			result = append(result, ItemtoVM(i))
+		}
+	}
+	return result
+}
+
+func ItemstoVM(a []models.Item) []Item {
+	var contents []Item
+	for _, i := range a {
+		contents = append(contents, ItemtoVM(i))
+	}
+	return contents
+}
+
+func ItemtoVM(i models.Item) Item {
+	return Item{
+		ID:          i.ID,
+		CategoryID:  i.CategoryID,
+		Title:       i.Title,
+		Description: i.Description,
+		ImageURL:    i.ImageURL,
+		Price:       i.Price,
+	}
 }
